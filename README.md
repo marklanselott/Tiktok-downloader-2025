@@ -1,4 +1,4 @@
-from TikTok.client import Client
+```from TikTok.client import Client
 from httpx import AsyncClient
 import asyncio, json
 
@@ -26,3 +26,4 @@ async def main():
     await download_video(data['itemInfo']['itemStruct']['video']['playAddr'], client)
 
 asyncio.run(main())
+```
