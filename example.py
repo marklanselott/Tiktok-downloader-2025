@@ -1,26 +1,29 @@
-from TikTok import Client, Browser
-import asyncio, aiofiles, json
+from TikTok.client import Client
+from httpx import AsyncClient
+import asyncio, json
 
-client = Client(Browser(name='Mozilla', version='5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'))
 
-
-async def download_video(client: Client, url: str, path: str):
-    async with client.session.get(url) as response:
-        async with aiofiles.open(path, 'wb') as f:
-            await f.write(await response.read())
-        print(f"Video downloaded to {path}")
-
+async def download_video(url: str, client: Client):
+    response = await client.session.get(url)
+    with open("video.mp4", "wb") as f:
+        f.write(response.content)
 
 
 async def main():
-    await client.start()
-    id = await client.get_item_id("https://vm.tiktok.com/ZMBPRbRkT/")
-    item = await client.get_item(id)
-    
-    # json.dump(item, open(".json", "w", encoding="utf-8"), indent=4, ensure_ascii=False)
+    url = "https://vm.tiktok.com/ZMBdEeFgm"
 
-    await download_video(client, item['itemInfo']['itemStruct']['video']['playAddr'], f"video_{id}.mp4")
+    client = Client(session=AsyncClient())
+    type, id = await client.get_type(url)
+    data = await client.get_data(type, id)
 
-    await client.close()
+    json.dump(
+        data, 
+        open("data.json", "w", encoding="utf-8"), 
+        ensure_ascii=False, 
+        indent=4
+    )
+
+    await download_video(data['itemInfo']['itemStruct']['video']['playAddr'], client)
 
 asyncio.run(main())
+
