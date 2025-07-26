@@ -1,4 +1,5 @@
-```from TikTok.client import Client
+```python
+from TikTok.client import Client
 from httpx import AsyncClient
 import asyncio, json
 
